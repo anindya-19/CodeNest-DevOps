@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journal Entry</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #a31d1d;
+            color: #e9d7c5;
+            font-family: Arial, sans-serif;
+        }
+        textarea {
+            background: white;
+            color: black !important;
+            border: 3px solid black;
+            width: 100%;
+            height: 300px;
+            padding: 10px;
+            font-size: 18px;
+            border-radius: 20px;
+            outline: none;
+            resize: none;
+        }
+        textarea::placeholder {
+            color: gray;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-6">
+    <h1 class="text-4xl font-extrabold mb-6">A safe space for your thoughts and emotions...</h1>
+    <textarea placeholder="Take a deep breath and start writing…"></textarea>
+    <button class="mt-4 px-6 py-3 bg-[#e9d7c5] text-black font-bold text-xl border-4 border-black rounded-lg shadow-lg transition-all hover:bg-[#f8f2de] hover:text-black">
+        Save Entry
+    </button>
+</body>
+</html>

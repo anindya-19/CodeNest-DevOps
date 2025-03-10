@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Past Entries</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #a31d1d;
+            color: #e9d7c5;
+            font-family: Arial, sans-serif;
+        }
+        .entry-box {
+            background: white;
+            color: black;
+            width: 100%;
+            padding: 10px;
+            font-size: 18px;
+            border-radius: 20px;
+            outline: none;
+            resize: none;
+            border: none;
+        }
+        .calendar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 10px;
+        }
+        .calendar-header button {
+            font-size: 24px;
+            color: #e9d7c5;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .calendar-header button:hover {
+            color: #f8f2de;
+        }
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .calendar div {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #e9d7c5;
+            color: black;
+            font-weight: bold;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .calendar div:hover {
+            background-color: #f8f2de;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-6">
+    <h1 class="text-4xl font-extrabold mb-2">Your Journal Entries</h1>
+    <h2 class="text-xl mb-6">Take a moment to revisit your thoughts and reflections</h2>
+    
+    <div class="calendar-container">
+        <div class="calendar-header">
+            <button onclick="changeMonth(-1)">⬅️</button>
+            <h3 id="currentMonth">March 2025</h3>
+            <button onclick="changeMonth(1)">➡️</button>
+        </div>
+        <div class="calendar" id="calendar"></div>
+    </div>
+    
+    <div class="w-full max-w-2xl p-4">
+        <textarea class="entry-box" id="journalEntry" rows="6" placeholder="Select a date to view your entry..."></textarea>
+    </div>
+
+    <script>
+        let currentMonth = 2; // March (0-based index)
+        let currentYear = 2025;
+        
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        
+        function generateCalendar() {
+            const calendar = document.getElementById("calendar");
+            calendar.innerHTML = "";
+            document.getElementById("currentMonth").innerText = `${monthNames[currentMonth]} ${currentYear}`;
+            
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            for (let i = 1; i <= daysInMonth; i++) {
+                let day = document.createElement("div");
+                day.innerText = i;
+                day.addEventListener("click", function() {
+                    let storedEntry = localStorage.getItem(`${currentYear}-${currentMonth + 1}-${i}`) || "No entry found.";
+                    document.getElementById("journalEntry").value = storedEntry;
+                });
+                calendar.appendChild(day);
+            }
+        }
+        
+        function changeMonth(step) {
+            currentMonth += step;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            } else if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            generateCalendar();
+        }
+        
+        document.addEventListener("DOMContentLoaded", generateCalendar);
+    </script>
+</body>
+</html>
