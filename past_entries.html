@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Past Entries</title>
+    <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -89,6 +90,11 @@
         <textarea class="entry-box" id="journalEntry" rows="6" placeholder="Select a date to view your entry..."></textarea>
     </div>
 
+    <div id="journal-entries"></div>
+
+    <h1>Past Entries</h1>
+    <ul id="entriesList"></ul>
+
     <script>
         let currentMonth = 2; // March (0-based index)
         let currentYear = 2025;
@@ -125,6 +131,64 @@
         }
         
         document.addEventListener("DOMContentLoaded", generateCalendar);
+
+        async function fetchEntries() {
+            try {
+                const response = await fetch('/journals');
+                const journals = await response.json();
+                const entriesContainer = document.getElementById('journal-entries');
+                entriesContainer.innerHTML = '';
+                journals.forEach(entry => {
+                    const entryDiv = document.createElement('div');
+                    entryDiv.classList.add('journal-entry');
+                    entryDiv.innerHTML = `
+                        <h3>${entry.title}</h3>
+                        <p>${entry.content}</p>
+                        <button onclick="deleteEntry('${entry._id}')">Delete</button>
+                    `;
+                    entriesContainer.appendChild(entryDiv);
+                });
+            } catch (error) {
+                console.error('Error fetching journal entries:', error);
+            }
+        }
+
+        async function deleteEntry(id) {
+            try {
+                await fetch(`/journals/${id}`, { method: 'DELETE' });
+                fetchEntries(); // Refresh after deletion
+            } catch (error) {
+                console.error('Error deleting entry:', error);
+            }
+        }
+
+        window.onload = fetchEntries;
+
+        async function fetchJournals() {
+            const response = await fetch('http://localhost:5000/journals');
+            const journals = await response.json();
+            const groupedByDate = journals.reduce((acc, journal) => {
+                const date = journal.date;  // Use the date field from the backend response
+                acc[date] = acc[date] || [];
+                acc[date].push(journal);
+                return acc;
+            }, {});
+
+            const entriesList = document.getElementById('entriesList');
+            entriesList.innerHTML = '';  // Clear existing entries
+
+            for (const [date, entries] of Object.entries(groupedByDate)) {
+                const li = document.createElement('li');
+                const link = document.createElement('a');
+                link.href = `/journal_entries?date=${date}`;
+                link.textContent = date;
+                link.classList.add('date-link');
+                li.appendChild(link);
+                entriesList.appendChild(li);
+            }
+        }
+
+        fetchJournals();
     </script>
 </body>
 </html>

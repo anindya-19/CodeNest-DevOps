@@ -65,5 +65,61 @@
     <footer class="w-full bg-black text-white text-center py-4 mt-auto">
         988 Suicide & Crisis Lifeline, available 24/7. You can call or text 988 to connect with a trained crisis counselor.
     </footer>
+
+    <script>
+        // Fetch all journals
+        async function fetchJournals() {
+            const response = await fetch('http://localhost:5000/journals');
+            const data = await response.json();
+            console.log(data);
+        }
+
+        // Add a new journal
+        async function addJournal(title, content) {
+            await fetch('http://localhost:5000/journals', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, content })
+            });
+        }
+
+        function generateCalendar() {
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const calendar = document.getElementById("calendar");
+            calendar.innerHTML = "";
+
+            for (let i = 1; i <= daysInMonth; i++) {
+                const day = document.createElement("div");
+                day.classList.add("calendar-day");
+                day.textContent = i;
+
+                // Add click event to fetch journal entry
+                day.addEventListener("click", async function () {
+                    const date = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                    
+                    try {
+                        // Fetch journal entry for the selected date
+                        const response = await fetch(`/journal_entries?date=${date}`);
+                        if (!response.ok) {
+                            throw new Error("No journal entry found for this date.");
+                        }
+                        const entryText = await response.text();
+                        
+                        // Update the textarea with the fetched entry
+                        document.getElementById("journalEntry").value = entryText;
+                    } catch (error) {
+                        console.error("Error fetching journal entry:", error);
+                        document.getElementById("journalEntry").value = "No entry found for this date.";
+                    }
+                });
+
+                calendar.appendChild(day);
+            }
+        }
+
+        generateCalendar();
+    </script>
 </body>
 </html>
